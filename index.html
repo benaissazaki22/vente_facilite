@@ -723,6 +723,26 @@
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
             margin-bottom: 20px;
+            width: 100%;
+            position: relative;
+        }
+
+        .table-wrapper::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .table-wrapper::-webkit-scrollbar-track {
+            background: var(--color-bg);
+            border-radius: 4px;
+        }
+
+        .table-wrapper::-webkit-scrollbar-thumb {
+            background: var(--color-primary);
+            border-radius: 4px;
+        }
+
+        .table-wrapper::-webkit-scrollbar-thumb:hover {
+            background: var(--color-primary-dark);
         }
 
         table {
@@ -737,6 +757,61 @@
                 margin-left: -15px;
                 margin-right: -15px;
                 padding: 0 15px;
+                margin-bottom: 15px;
+            }
+
+            table {
+                min-width: 700px;
+                font-size: 13px;
+            }
+
+            th, td {
+                padding: 10px 8px;
+                white-space: nowrap;
+            }
+
+            th {
+                font-size: 12px;
+                padding: 12px 8px;
+            }
+
+            .action-buttons {
+                display: flex;
+                gap: 5px;
+                flex-wrap: nowrap;
+            }
+
+            .action-buttons .btn {
+                padding: 6px 10px;
+                font-size: 12px;
+                min-width: auto;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .table-wrapper {
+                margin-left: -10px;
+                margin-right: -10px;
+                padding: 0 10px;
+            }
+
+            table {
+                min-width: 650px;
+                font-size: 12px;
+            }
+
+            th, td {
+                padding: 8px 6px;
+            }
+
+            th {
+                font-size: 11px;
+                padding: 10px 6px;
+            }
+
+            .action-buttons .btn {
+                padding: 5px 8px;
+                font-size: 11px;
             }
         }
 
@@ -1289,7 +1364,7 @@
                 <div class="header-right">
                     <button class="notification-btn">
                         <i class="fas fa-bell"></i>
-                        <span class="notification-badge">3</span>
+                        <span class="notification-badge"></span>
                     </button>
                     
                     <div class="user-profile">
@@ -3069,7 +3144,7 @@ function updateProductSelect() {
                 `;
             });
 
-            html += '</tbody></table>';
+            html += '</tbody></table></div>';
             container.innerHTML = html;
         }
 
@@ -3091,20 +3166,21 @@ function updateProductSelect() {
             }
 
             let html = `
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Client</th>
-                            <th>Produit</th>
-                            <th>Qté</th>
-                            <th>Revenu</th>
-                            <th>Bénéfice</th>
-                            <th>Statut</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Client</th>
+                                <th>Produit</th>
+                                <th>Qté</th>
+                                <th>Revenu</th>
+                                <th>Bénéfice</th>
+                                <th>Statut</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
             `;
 
             sales.forEach(sale => {
@@ -3134,7 +3210,7 @@ function updateProductSelect() {
                 `;
             });
 
-            html += '</tbody></table>';
+            html += '</tbody></table></div>';
             container.innerHTML = html;
         }
         async function loadPayments() {
@@ -3331,7 +3407,7 @@ function updatePaymentsTable(payments = state.payments) {
         return;
     }
 
-    let html = '<table><thead><tr><th>Date</th><th>Client</th><th>Produit</th><th>Montant</th><th>Méthode</th><th>Statut</th><th>Actions</th></tr></thead><tbody>';
+    let html = '<div class="table-wrapper"><table><thead><tr><th>Date</th><th>Client</th><th>Produit</th><th>Montant</th><th>Méthode</th><th>Statut</th><th>Actions</th></tr></thead><tbody>';
     
     payments.forEach(payment => {
         const paymentDate = new Date(payment.payment_date).toLocaleDateString('fr-FR');
@@ -3359,7 +3435,7 @@ function updatePaymentsTable(payments = state.payments) {
         `;
     });
     
-    html += '</tbody></table>';
+    html += '</tbody></table></div>';
     container.innerHTML = html;
 }
 
@@ -3515,19 +3591,20 @@ function updatePaymentMonthSelect() {
             }
 
             let html = `
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Produit</th>
-                            <th>Catégorie</th>
-                            <th>Prix Achat</th>
-                            <th>Prix Vente</th>
-                            <th>Stock</th>
-                            <th>Marge</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Produit</th>
+                                <th>Catégorie</th>
+                                <th>Prix Achat</th>
+                                <th>Prix Vente</th>
+                                <th>Stock</th>
+                                <th>Marge</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
             `;
 
             products.forEach(product => {
@@ -3562,7 +3639,7 @@ function updatePaymentMonthSelect() {
                 `;
             });
 
-            html += '</tbody></table>';
+            html += '</tbody></table></div>';
             container.innerHTML = html;
         }
 
@@ -3583,18 +3660,19 @@ function updatePaymentMonthSelect() {
             }
 
             let html = `
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Fournisseur</th>
-                            <th>Contact</th>
-                            <th>Téléphone</th>
-                            <th>Produits</th>
-                            <th>Total Fourni</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Fournisseur</th>
+                                <th>Contact</th>
+                                <th>Téléphone</th>
+                                <th>Produits</th>
+                                <th>Total Fourni</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
             `;
 
             suppliers.forEach(supplier => {
@@ -3619,7 +3697,7 @@ function updatePaymentMonthSelect() {
                 `;
             });
 
-            html += '</tbody></table>';
+            html += '</tbody></table></div>';
             container.innerHTML = html;
         }
 
@@ -3646,7 +3724,7 @@ function updatePaymentMonthSelect() {
                 return;
             }
 
-            let html = '<table><thead><tr><th>Date</th><th>Client</th><th>Produit</th><th>Revenu</th><th>Bénéfice</th><th>Statut</th></tr></thead><tbody>';
+            let html = '<div class="table-wrapper"><table><thead><tr><th>Date</th><th>Client</th><th>Produit</th><th>Revenu</th><th>Bénéfice</th><th>Statut</th></tr></thead><tbody>';
 
             recentSales.forEach(sale => {
                 const saleDate = new Date(sale.created_at).toLocaleDateString('fr-FR');
@@ -3669,7 +3747,7 @@ function updatePaymentMonthSelect() {
                 `;
             });
 
-            html += '</tbody></table>';
+            html += '</tbody></table></div>';
             container.innerHTML = html;
         }
 
@@ -4016,21 +4094,22 @@ function updatePaymentMonthSelect() {
             let totalProfit = 0;
 
             let html = `
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Client</th>
-                            <th>Produit</th>
-                            <th>Qté</th>
-                            <th>Prix Achat</th>
-                            <th>Prix Vente</th>
-                            <th>Revenu</th>
-                            <th>Coût</th>
-                            <th>Bénéfice</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Client</th>
+                                <th>Produit</th>
+                                <th>Qté</th>
+                                <th>Prix Achat</th>
+                                <th>Prix Vente</th>
+                                <th>Revenu</th>
+                                <th>Coût</th>
+                                <th>Bénéfice</th>
+                            </tr>
+                        </thead>
+                        <tbody>
             `;
 
             filtered.forEach(sale => {
@@ -4056,7 +4135,7 @@ function updatePaymentMonthSelect() {
                 `;
             });
 
-            html += '</tbody></table>';
+            html += '</tbody></table></div>';
 
             const profitColor = totalProfit >= 0 ? 'var(--color-success)' : 'var(--color-error)';
             html += `
