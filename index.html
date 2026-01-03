@@ -945,6 +945,10 @@
                     <i class="fas fa-shopping-cart"></i>
                     <span>Ventes</span>
                 </a>
+                <a href="#" class="nav-item" onclick="switchSection('payments')">
+                    <i class="fas fa-calendar-check"></i>
+                    <span>Versements</span>
+                </a>
                 <a href="#" class="nav-item" onclick="switchSection('products')">
                     <i class="fas fa-boxes"></i>
                     <span>Produits</span>
@@ -1197,6 +1201,23 @@
                                     </select>
                                 </div>
                                 <div class="form-group">
+                                    <label for="salePaymentDay">Jour de versement mensuel *</label>
+                                    <select id="salePaymentDay" required>
+                                        <option value="">Sélectionner un jour</option>
+                                        <option value="1">1</option>
+                                        <option value="5">5</option>
+                                        <option value="10">10</option>
+                                        <option value="15">15</option>
+                                        <option value="20">20</option>
+                                        <option value="25">25</option>
+                                        <option value="28">28</option>
+                                    </select>
+                                    <small style="color: var(--color-text-light); font-size: 12px;">
+                                        Jour du mois pour les versements mensuels
+                                    </small>
+                                </div>
+                            </div>
+                                <div class="form-group">
                                     <label for="saleStatus">Statut</label>
                                     <select id="saleStatus">
                                         <option value="completed">Terminée</option>
@@ -1264,7 +1285,59 @@
                         </div>
                     </div>
                 </section>
-                
+                <!-- PAYMENTS SECTION -->
+<section id="payments" class="section">
+    <div class="card">
+        <div class="card-header">
+            <h2><i class="fas fa-calendar-check"></i> Gestion des Versements</h2>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn btn-primary" onclick="toggleModal('paymentModal')">
+                    <i class="fas fa-plus"></i> Nouveau Versement
+                </button>
+                <button class="btn btn-success" onclick="exportPayments()">
+                    <i class="fas fa-file-export"></i> Exporter
+                </button>
+            </div>
+        </div>
+        
+        <!-- Filtres -->
+        <div class="form-row" style="margin-bottom: 20px;">
+            <div class="form-group">
+                <label for="filterPaymentClient">Filtrer par Client</label>
+                <select id="filterPaymentClient" onchange="filterPayments()">
+                    <option value="">Tous les clients</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="filterPaymentStatus">Filtrer par Statut</label>
+                <select id="filterPaymentStatus" onchange="filterPayments()">
+                    <option value="">Tous les statuts</option>
+                    <option value="paid">Payé</option>
+                    <option value="pending">En attente</option>
+                    <option value="overdue">En retard</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="filterPaymentMonth">Filtrer par Mois</label>
+                <select id="filterPaymentMonth" onchange="filterPayments()">
+                    <option value="">Tous les mois</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="paymentSearch" placeholder="Rechercher un versement..." onkeyup="filterPayments()">
+        </div>
+        
+        <!-- Alertes de retard -->
+        <div id="overdueAlerts" style="margin-bottom: 20px;"></div>
+        
+        <div id="paymentsTableContainer">
+            <div class="loading">Chargement des versements...</div>
+        </div>
+    </div>
+</section>
                 <!-- PRODUCTS SECTION -->
                 <section id="products" class="section">
                     <div class="card">
@@ -1407,6 +1480,83 @@
     </div>
     
     <!-- MODALS -->
+     <!-- PAYMENT MODAL -->
+<div id="paymentModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2><i class="fas fa-money-check-alt"></i> Nouveau Versement</h2>
+            <button class="close-btn" onclick="toggleModal('paymentModal')">&times;</button>
+        </div>
+        <form id="paymentForm" onsubmit="addPayment(event)">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="paymentClient">Client *</label>
+                    <select id="paymentClient" required onchange="loadClientProducts(this.value)">
+                        <option value="">Sélectionner un client</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="paymentProduct">Produit *</label>
+                    <select id="paymentProduct" required>
+                        <option value="">Sélectionner un produit</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="paymentAmount">Montant (DA) *</label>
+                    <input type="number" id="paymentAmount" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="paymentDate">Date du versement *</label>
+                    <input type="date" id="paymentDate" required>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="paymentMethod">Méthode de paiement</label>
+                    <select id="paymentMethod">
+                        <option value="cash">Espèces</option>
+                        <option value="check">Chèque</option>
+                        <option value="transfer">Virement</option>
+                        <option value="mobile">Mobile Money</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="paymentReference">Référence</label>
+                    <input type="text" id="paymentReference" placeholder="N° chèque/transfert">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="paymentNotes">Notes</label>
+                <textarea id="paymentNotes" rows="3" placeholder="Notes supplémentaires..."></textarea>
+            </div>
+            
+            <!-- Informations sur le solde -->
+            <div id="balanceInfo" style="background: var(--color-bg); padding: 15px; border-radius: var(--border-radius-sm); margin-bottom: 20px; display: none;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                    <span>Montant total du produit:</span>
+                    <strong id="totalProductAmount">0 DA</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                    <span>Déjà payé:</span>
+                    <strong id="alreadyPaid">0 DA</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-weight: bold; color: var(--color-primary);">
+                    <span>Solde restant:</span>
+                    <strong id="remainingBalance">0 DA</strong>
+                </div>
+            </div>
+            
+            <button type="submit" class="btn btn-primary" style="width: 100%;">
+                <i class="fas fa-check"></i> Enregistrer le Versement
+            </button>
+        </form>
+    </div>
+</div>
     <div id="clientModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -1600,7 +1750,9 @@
             sales: [],
             products: [],
             suppliers: [],
-            filteredSales: []
+            filteredSales: [],
+            payments: [],
+    paymentPlans: []
         };
 
         // ===== INITIALIZATION =====
@@ -1961,6 +2113,8 @@
         const clientId = parseInt(document.getElementById('saleClient').value);
         const productSelect = document.getElementById('saleProduct');
         const selectedProduct = productSelect.value;
+        const paymentDay = document.getElementById('salePaymentDay').value;
+
         
         let productId = null;
         let productName = '';
@@ -1986,7 +2140,10 @@
             showError('❌ Veuillez sélectionner ou créer un produit');
             return;
         }
-        
+        if (!paymentDay) {
+            showError('❌ Veuillez sélectionner un jour de versement');
+            return;
+        }
         // Récupérer les autres valeurs du formulaire
         const quantity = parseInt(document.getElementById('saleQuantity').value);
         const costPrice = parseFloat(document.getElementById('saleCostPrice').value);
@@ -2073,7 +2230,9 @@
             payment_method: document.getElementById('salePaymentMethod').value,
             status: document.getElementById('saleStatus').value,
             notes: document.getElementById('saleNotes').value.trim() || null,
-            created_at: new Date().toISOString()
+            created_at: new Date().toISOString(),
+            payment_day: parseInt(paymentDay),
+
         };
         
         // Insertion dans la base de données
@@ -2118,7 +2277,24 @@
         showError('❌ Erreur lors de l\'enregistrement de la vente');
     }
 }
+// Vérifier les retards chaque jour
+function scheduleDailyCheck() {
+    // Vérifier maintenant
+    checkOverduePayments();
+    
+    // Vérifier chaque jour à minuit
+    const now = new Date();
+    const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0);
+    const timeUntilMidnight = midnight - now;
+    
+    setTimeout(() => {
+        checkOverduePayments();
+        scheduleDailyCheck(); // Reprogrammer pour le lendemain
+    }, timeUntilMidnight);
+}
 
+// Démarrer la vérification quotidienne
+scheduleDailyCheck();
         async function registerSupplier(productName, supplierName, costPrice, quantity) {
             try {
                 const existingSupplier = state.suppliers.find(s =>
@@ -2524,7 +2700,367 @@ function updateProductSelect() {
             html += '</tbody></table>';
             container.innerHTML = html;
         }
+        async function loadPayments() {
+    try {
+        const { data, error } = await supabase
+            .from('payments')
+            .select('*')
+            .order('payment_date', { ascending: false });
+        if (error) throw error;
+        state.payments = data || [];
+        updatePaymentsTable();
+        checkOverduePayments();
+    } catch (error) {
+        console.error('❌ Erreur chargement versements:', error);
+        showError('Erreur lors du chargement des versements');
+    }
+}
 
+async function loadPaymentPlans() {
+    try {
+        const { data, error } = await supabase
+            .from('payment_plans')
+            .select('*');
+        if (error) throw error;
+        state.paymentPlans = data || [];
+    } catch (error) {
+        console.error('❌ Erreur chargement plans paiement:', error);
+    }
+}
+
+async function addPayment(e) {
+    e.preventDefault();
+    try {
+        const clientId = parseInt(document.getElementById('paymentClient').value);
+        const productId = parseInt(document.getElementById('paymentProduct').value);
+        const amount = parseFloat(document.getElementById('paymentAmount').value);
+        const paymentDate = document.getElementById('paymentDate').value;
+        const method = document.getElementById('paymentMethod').value;
+        const reference = document.getElementById('paymentReference').value.trim();
+        const notes = document.getElementById('paymentNotes').value.trim();
+
+        if (!clientId || !productId || !amount || !paymentDate) {
+            showError('❌ Veuillez remplir tous les champs obligatoires');
+            return;
+        }
+
+        // Vérifier le solde restant
+        const sale = state.sales.find(s => s.client_id === clientId && s.product_id === productId);
+        if (!sale) {
+            showError('❌ Aucune vente trouvée pour ce client et produit');
+            return;
+        }
+
+        const totalPaid = state.payments
+            .filter(p => p.client_id === clientId && p.product_id === productId)
+            .reduce((sum, p) => sum + p.amount, 0);
+
+        if (totalPaid + amount > sale.total_revenue) {
+            showError(`❌ Montant trop élevé. Maximum possible: ${formatNumber(sale.total_revenue - totalPaid)} DA`);
+            return;
+        }
+
+        const paymentData = {
+            client_id: clientId,
+            client_name: sale.client_name,
+            product_id: productId,
+            product: sale.product,
+            amount: amount,
+            payment_date: paymentDate,
+            payment_method: method,
+            reference: reference || null,
+            notes: notes || null,
+            status: 'paid',
+            created_at: new Date().toISOString()
+        };
+
+        const { data, error } = await supabase
+            .from('payments')
+            .insert([paymentData])
+            .select();
+
+        if (error) throw error;
+
+        // Vérifier si le produit est entièrement payé
+        const newTotalPaid = totalPaid + amount;
+        if (newTotalPaid >= sale.total_revenue) {
+            showSuccess('✅ Produit entièrement payé !');
+        }
+
+        document.getElementById('paymentForm').reset();
+        toggleModal('paymentModal');
+        await loadPayments();
+        showSuccess('✅ Versement enregistré avec succès');
+    } catch (error) {
+        console.error('❌ Erreur ajout versement:', error);
+        showError('❌ Erreur lors de l\'enregistrement');
+    }
+}
+
+function loadClientProducts(clientId) {
+    const productSelect = document.getElementById('paymentProduct');
+    productSelect.innerHTML = '<option value="">Sélectionner un produit</option>';
+    
+    if (!clientId) {
+        document.getElementById('balanceInfo').style.display = 'none';
+        return;
+    }
+
+    const clientSales = state.sales.filter(s => s.client_id == clientId);
+    
+    clientSales.forEach(sale => {
+        const option = document.createElement('option');
+        option.value = sale.product_id;
+        option.textContent = `${sale.product} - ${formatNumber(sale.total_revenue)} DA`;
+        option.dataset.total = sale.total_revenue;
+        productSelect.appendChild(option);
+    });
+
+    productSelect.addEventListener('change', function() {
+        updateBalanceInfo(clientId, this.value);
+    });
+}
+
+function updateBalanceInfo(clientId, productId) {
+    const infoDiv = document.getElementById('balanceInfo');
+    if (!clientId || !productId) {
+        infoDiv.style.display = 'none';
+        return;
+    }
+
+    const sale = state.sales.find(s => s.client_id == clientId && s.product_id == productId);
+    if (!sale) return;
+
+    const totalPaid = state.payments
+        .filter(p => p.client_id == clientId && p.product_id == productId)
+        .reduce((sum, p) => sum + p.amount, 0);
+
+    document.getElementById('totalProductAmount').textContent = formatNumber(sale.total_revenue) + ' DA';
+    document.getElementById('alreadyPaid').textContent = formatNumber(totalPaid) + ' DA';
+    document.getElementById('remainingBalance').textContent = formatNumber(sale.total_revenue - totalPaid) + ' DA';
+    
+    infoDiv.style.display = 'block';
+}
+
+function checkOverduePayments() {
+    const today = new Date();
+    const overduePayments = state.sales.filter(sale => {
+        // Vérifier si le produit n'est pas entièrement payé
+        const totalPaid = state.payments
+            .filter(p => p.client_id === sale.client_id && p.product_id === sale.product_id)
+            .reduce((sum, p) => sum + p.amount, 0);
+        
+        if (totalPaid >= sale.total_revenue) return false; // Déjà payé
+        
+        // Vérifier le jour de versement
+        const paymentDay = sale.payment_day || 1;
+        const currentDay = today.getDate();
+        
+        return currentDay > paymentDay;
+    });
+
+    if (overduePayments.length > 0) {
+        showOverdueAlerts(overduePayments);
+    }
+}
+
+function showOverdueAlerts(overduePayments) {
+    const container = document.getElementById('overdueAlerts');
+    let html = '<div class="alert alert-error">';
+    html += '<strong><i class="fas fa-exclamation-triangle"></i> Alertes de retard de paiement</strong><br>';
+    
+    overduePayments.slice(0, 5).forEach(sale => {
+        html += `
+            <div style="margin-top: 10px; padding: 10px; background: rgba(239,68,68,0.1); border-radius: 6px;">
+                <strong>${sale.client_name}</strong> - ${sale.product}<br>
+                <small>Jour de versement: ${sale.payment_day || 1} du mois</small>
+            </div>
+        `;
+    });
+    
+    if (overduePayments.length > 5) {
+        html += `<div style="margin-top: 10px; font-style: italic;">+ ${overduePayments.length - 5} autres retard(s)</div>`;
+    }
+    
+    html += '</div>';
+    container.innerHTML = html;
+}
+
+function updatePaymentsTable(payments = state.payments) {
+    const container = document.getElementById('paymentsTableContainer');
+    
+    if (payments.length === 0) {
+        container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">💰</div><p>Aucun versement trouvé</p></div>';
+        return;
+    }
+
+    let html = '<table><thead><tr><th>Date</th><th>Client</th><th>Produit</th><th>Montant</th><th>Méthode</th><th>Statut</th><th>Actions</th></tr></thead><tbody>';
+    
+    payments.forEach(payment => {
+        const paymentDate = new Date(payment.payment_date).toLocaleDateString('fr-FR');
+        const statusClass = payment.status === 'paid' ? 'success' : 
+                          payment.status === 'overdue' ? 'error' : 'pending';
+        
+        html += `
+            <tr>
+                <td>${paymentDate}</td>
+                <td><strong>${payment.client_name}</strong></td>
+                <td>${payment.product}</td>
+                <td><span class="currency">${formatNumber(payment.amount)} DA</span></td>
+                <td>${payment.payment_method}</td>
+                <td><span class="status-badge status-${statusClass}">${
+                    payment.status === 'paid' ? 'Payé' : 
+                    payment.status === 'overdue' ? 'En retard' : 'En attente'
+                }</span></td>
+                <td>
+                    <div class="action-buttons">
+                        <button class="btn btn-small" onclick="viewPaymentDetails(${payment.id})">👁️</button>
+                        <button class="btn btn-danger btn-small" onclick="deletePayment(${payment.id})">🗑️</button>
+                    </div>
+                </td>
+            </tr>
+        `;
+    });
+    
+    html += '</tbody></table>';
+    container.innerHTML = html;
+}
+
+function filterPayments() {
+    const clientFilter = document.getElementById('filterPaymentClient').value;
+    const statusFilter = document.getElementById('filterPaymentStatus').value;
+    const monthFilter = document.getElementById('filterPaymentMonth').value;
+    const searchTerm = document.getElementById('paymentSearch').value.toLowerCase();
+    
+    let filtered = state.payments.filter(payment => {
+        if (clientFilter && payment.client_id != clientFilter) return false;
+        if (statusFilter && payment.status !== statusFilter) return false;
+        if (monthFilter) {
+            const paymentMonth = new Date(payment.payment_date).getMonth() + 1;
+            if (paymentMonth != monthFilter) return false;
+        }
+        if (searchTerm && 
+            !payment.client_name.toLowerCase().includes(searchTerm) &&
+            !payment.product.toLowerCase().includes(searchTerm)) return false;
+        return true;
+    });
+    
+    updatePaymentsTable(filtered);
+}
+
+async function deletePayment(paymentId) {
+    if (confirm('⚠️ Êtes-vous sûr de vouloir supprimer ce versement ?')) {
+        try {
+            const { error } = await supabase
+                .from('payments')
+                .delete()
+                .eq('id', paymentId);
+            
+            if (error) throw error;
+            
+            await loadPayments();
+            showSuccess('✅ Versement supprimé avec succès');
+        } catch (error) {
+            console.error('❌ Erreur suppression versement:', error);
+            showError('❌ Erreur lors de la suppression');
+        }
+    }
+}
+
+function exportPayments() {
+    const data = state.payments;
+    const filename = 'versements.csv';
+    const headers = ['Date', 'Client', 'Produit', 'Montant', 'Méthode', 'Statut', 'Référence'];
+    
+    const rows = data.map(p => [
+        new Date(p.payment_date).toLocaleDateString('fr-FR'),
+        p.client_name,
+        p.product,
+        p.amount,
+        p.payment_method,
+        p.status,
+        p.reference || ''
+    ]);
+    
+    const csvContent = [
+        headers.join(','),
+        ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
+    ].join('\n');
+    
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    
+    link.setAttribute('href', url);
+    link.setAttribute('download', filename);
+    link.style.visibility = 'hidden';
+    
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    showSuccess('✅ Export des versements réussi');
+}
+
+// Mettre à jour la fonction init pour charger les versements
+async function init() {
+    console.log('🚀 Initialisation de l\'application...');
+    try {
+        await Promise.all([
+            loadClients(),
+            loadSales(),
+            loadProducts(),
+            loadSuppliers(),
+            loadPayments(),
+            loadPaymentPlans()
+        ]);
+        
+        // Mettre à jour les sélecteurs
+        updatePaymentClientSelect();
+        updatePaymentMonthSelect();
+        
+        // ... reste du code existant ...
+    } catch (error) {
+        console.error('Erreur lors de l\'initialisation:', error);
+        showError('❌ Erreur lors du chargement de l\'application');
+    }
+}
+
+function updatePaymentClientSelect() {
+    const select = document.getElementById('paymentClient');
+    const filterSelect = document.getElementById('filterPaymentClient');
+    const currentValue = select.value;
+    
+    select.innerHTML = '<option value="">Sélectionner un client</option>';
+    filterSelect.innerHTML = '<option value="">Tous les clients</option>';
+    
+    state.clients.forEach(client => {
+        const option = document.createElement('option');
+        option.value = client.id;
+        option.textContent = client.name;
+        select.appendChild(option);
+        
+        const filterOption = option.cloneNode(true);
+        filterSelect.appendChild(filterOption);
+    });
+    
+    select.value = currentValue;
+}
+
+function updatePaymentMonthSelect() {
+    const select = document.getElementById('filterPaymentMonth');
+    const months = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 
+                   'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
+    
+    select.innerHTML = '<option value="">Tous les mois</option>';
+    
+    months.forEach((month, index) => {
+        const option = document.createElement('option');
+        option.value = index + 1;
+        option.textContent = month;
+        select.appendChild(option);
+    });
+}
         function updateProductsTable(products = state.products) {
             const container = document.getElementById('productsTableContainer');
 
