@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="logo.png">
     <title>Gestion de Ventes - Supabase</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -48,6 +49,16 @@
             height: 100%;
             font-size: 15px;
             overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Better touch targets for mobile */
+        @media (max-width: 768px) {
+            .btn, button, .nav-item, .mobile-menu-btn {
+                min-height: 44px;
+                min-width: 44px;
+            }
         }
 
         .app-container {
@@ -241,10 +252,33 @@
             padding: 30px;
         }
 
-        /* RESPONSIVE DESIGN */
+        /* MOBILE OVERLAY */
+        .mobile-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 99;
+            backdrop-filter: blur(2px);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .mobile-overlay.active {
+            display: block;
+            opacity: 1;
+        }
+
+        /* RESPONSIVE DESIGN - TABLET & MOBILE */
         @media (max-width: 1024px) {
             .sidebar {
                 transform: translateX(-100%);
+                width: 280px;
+                z-index: 100;
+                box-shadow: 5px 0 25px rgba(0, 0, 0, 0.2);
             }
             
             .sidebar.open {
@@ -253,20 +287,52 @@
             
             .main-content {
                 margin-left: 0;
+                width: 100%;
             }
             
             .mobile-menu-btn {
-                display: block;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 44px;
+                height: 44px;
+                border-radius: 8px;
+                background: var(--color-bg);
+                transition: all 0.3s;
+            }
+            
+            .mobile-menu-btn:hover {
+                background: var(--color-border);
             }
             
             .content-container {
                 padding: 20px;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 20px;
+            }
+
+            .grid {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 20px;
+            }
+
+            .card-header {
+                flex-wrap: wrap;
+                gap: 15px;
+            }
+
+            .card-header h2 {
+                font-size: 18px;
             }
         }
 
         @media (max-width: 768px) {
             .main-header {
                 padding: 0 15px;
+                height: 60px;
             }
             
             .content-container {
@@ -278,6 +344,99 @@
             }
             
             .company-name {
+                font-size: 18px;
+            }
+
+            .sidebar {
+                width: 85%;
+                max-width: 320px;
+            }
+
+            .company-logo i {
+                font-size: 24px;
+                padding: 10px;
+            }
+
+            .nav-item {
+                padding: 14px 20px;
+                font-size: 14px;
+            }
+
+            .nav-item i {
+                font-size: 16px;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .stat-card {
+                padding: 20px;
+            }
+
+            .stat-value {
+                font-size: 28px;
+            }
+
+            .card-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .card-header h2 {
+                font-size: 18px;
+            }
+
+            table {
+                font-size: 13px;
+                display: block;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            th, td {
+                padding: 12px 10px;
+                white-space: nowrap;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .action-buttons .btn {
+                width: 100%;
+            }
+
+            .modal-content {
+                padding: 25px 20px;
+                margin: 10px;
+                max-width: calc(100% - 20px);
+            }
+
+            .summary-row {
+                grid-template-columns: 1fr;
+            }
+
+            .notification {
+                right: 15px;
+                left: 15px;
+                max-width: none;
+                top: 80px;
+            }
+
+            .page-title {
                 font-size: 18px;
             }
         }
@@ -292,7 +451,114 @@
             }
             
             .page-title {
-                font-size: 18px;
+                font-size: 16px;
+            }
+
+            .sidebar {
+                width: 90%;
+            }
+            
+            .sidebar-header {
+                padding: 20px 15px;
+            }
+            
+            .nav-item {
+                padding: 12px 15px;
+            }
+            
+            .company-logo {
+                flex-direction: column;
+                text-align: center;
+                gap: 10px;
+            }
+            
+            .company-logo img {
+                width: 140px;
+            }
+
+            .main-header {
+                padding: 0 10px;
+                height: 55px;
+            }
+
+            .content-container {
+                padding: 10px;
+            }
+
+            .card {
+                padding: 15px;
+                margin-bottom: 15px;
+            }
+
+            .stat-card {
+                padding: 15px;
+            }
+
+            .stat-value {
+                font-size: 24px;
+            }
+
+            .stat-icon {
+                font-size: 24px;
+            }
+
+            .btn {
+                padding: 10px 15px;
+                font-size: 13px;
+            }
+
+            .btn-small {
+                padding: 6px 12px;
+                font-size: 12px;
+            }
+
+            .card-header h2 {
+                font-size: 16px;
+            }
+
+            .modal-content {
+                padding: 20px 15px;
+                margin: 5px;
+            }
+
+            .form-group {
+                margin-bottom: 15px;
+            }
+
+            input, select, textarea {
+                padding: 10px 12px;
+                font-size: 14px;
+            }
+
+            .search-box input {
+                padding-left: 40px;
+            }
+
+            .search-box i {
+                left: 15px;
+                font-size: 14px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .sidebar {
+                width: 95%;
+            }
+            
+            .nav-item span {
+                font-size: 13px;
+            }
+            
+            .sidebar-nav {
+                padding: 15px 0;
+            }
+
+            .stat-value {
+                font-size: 20px;
+            }
+
+            .card {
+                padding: 12px;
             }
         }
 
@@ -453,10 +719,25 @@
             gap: 20px;
         }
 
+        .table-wrapper {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin-bottom: 20px;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
             font-size: 14px;
+            min-width: 600px;
+        }
+
+        @media (max-width: 768px) {
+            .table-wrapper {
+                margin-left: -15px;
+                margin-right: -15px;
+                padding: 0 15px;
+            }
         }
 
         th {
@@ -678,7 +959,63 @@
             animation: modalSlideIn 0.3s;
             box-shadow: var(--shadow-xl);
         }
+        /* Sidebar scroll improvement */
+        .sidebar {
+            -webkit-overflow-scrolling: touch;
+        }
 
+        /* Sidebar user section on mobile */
+        @media (max-width: 1024px) {
+            .sidebar-nav {
+                padding-bottom: 30px;
+            }
+            
+            .sidebar > div:last-child {
+                padding: 20px;
+                margin-top: auto;
+                position: sticky;
+                bottom: 0;
+                background: var(--color-primary-dark);
+            }
+        }
+
+        /* Prevent body scroll when sidebar is open */
+        body.sidebar-open {
+            overflow: hidden;
+            position: fixed;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Desktop view - sidebar always visible */
+        @media (min-width: 1025px) {
+            .sidebar {
+                transform: translateX(0) !important;
+            }
+            
+            .mobile-overlay {
+                display: none !important;
+            }
+            
+            .mobile-menu-btn {
+                display: none !important;
+            }
+            
+            .main-content {
+                margin-left: var(--sidebar-width) !important;
+            }
+        }
+
+        /* Tablet landscape optimization */
+        @media (min-width: 769px) and (max-width: 1024px) and (orientation: landscape) {
+            .sidebar {
+                width: 240px;
+            }
+            
+            .dashboard-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
         @keyframes modalSlideIn {
             from {
                 transform: translateY(-20px);
@@ -746,6 +1083,19 @@
             border-radius: var(--border-radius);
             box-shadow: var(--shadow);
             margin-bottom: 25px;
+            position: relative;
+            overflow-x: auto;
+        }
+
+        @media (max-width: 768px) {
+            .chart-container {
+                padding: 15px;
+            }
+            
+            .chart-container canvas {
+                max-width: 100%;
+                height: auto !important;
+            }
         }
 
         .summary-row {
@@ -831,66 +1181,6 @@
 
         .pagination-btn:hover:not(.active) {
             background: var(--color-bg);
-        }
-
-        /* MOBILE OPTIMIZATIONS */
-        @media (max-width: 768px) {
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-            
-            .grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .action-buttons {
-                flex-direction: column;
-            }
-            
-            .action-buttons .btn {
-                width: 100%;
-                justify-content: center;
-            }
-            
-            table {
-                font-size: 13px;
-                display: block;
-                overflow-x: auto;
-            }
-            
-            th, td {
-                padding: 12px 10px;
-            }
-            
-            .card-header {
-                flex-direction: column;
-                gap: 20px;
-                align-items: flex-start;
-            }
-            
-            .export-btn {
-                margin-left: 0;
-                width: 100%;
-            }
-            
-            .modal-content {
-                padding: 25px 20px;
-                width: 100%;
-            }
-            
-            .summary-row {
-                grid-template-columns: 1fr;
-            }
-            
-            .stat-value {
-                font-size: 28px;
-            }
-            
-            .notification {
-                right: 15px;
-                left: 15px;
-                max-width: none;
-            }
         }
 
         /* DASHBOARD SPECIFIC */
@@ -1204,37 +1494,13 @@
                                     <label for="salePaymentDay">Jour de versement mensuel *</label>
                                     <select id="salePaymentDay" required>
                                         <option value="">Sélectionner un jour</option>
-                                        <option value="1">01</option>
-                                          <option value="2">02</option>
-                                        <option value="3">03</option>
-                                        <option value="4">04</option>
-                                        <option value="5">05</option>
-                                        <option value="6">06</option>
-                                        <option value="7">07</option>
-                                        <option value="8">08</option>
-                                        <option value="9">09</option>
+                                        <option value="1">1</option>
+                                        <option value="5">5</option>
                                         <option value="10">10</option>
-                                        <option value="11">11</option>
-                                        <option value="12">12</option>
-                                        <option value="13">13</option>
-                                         <option value="14">14</option>
-                                          <option value="15">15</option>
-                                        <option value="16">16</option>
-                                        <option value="17">17</option>
-                                        <option value="18">18</option>
-                                        <option value="19">19</option>
+                                        <option value="15">15</option>
                                         <option value="20">20</option>
-                                        <option value="21">21</option>
-                                        <option value="22">22</option>
-                                        <option value="23">23</option>
-                                        <option value="24">24</option>
                                         <option value="25">25</option>
-                                        <option value="26">26</option>
-                                        <option value="27">27</option>
                                         <option value="28">28</option>
-                                        <option value="29">29</option>
-                                        <option value="30">30</option>
-                                        <option value="31">31</option>
                                     </select>
                                     <small style="color: var(--color-text-light); font-size: 12px;">
                                         Jour du mois pour les versements mensuels
@@ -1767,7 +2033,153 @@
         const SUPABASE_URL = 'https://jnfqvaaeafafjidwqlpo.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpuZnF2YWFlYWZhZmppZHdxbHBvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjczODYwMzYsImV4cCI6MjA4Mjk2MjAzNn0.bJn9dFLE4eIjSzZ1XeJ7aEqkhU_iJxxDTzOHwD2Vz8o';
         var supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        function closeSidebarOnClickOutside(event) {
+        const sidebar = document.getElementById('sidebar');
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const overlay = document.getElementById('mobileOverlay');
+        
+        // Vérifie si on est sur mobile
+        if (window.innerWidth <= 1024) {
+            // Si on clique sur l'overlay ou en dehors de la sidebar
+            if (sidebar && sidebar.classList.contains('open')) {
+                if (overlay && overlay.contains(event.target)) {
+                    toggleSidebar();
+                } else if (!sidebar.contains(event.target) && 
+                          (!mobileMenuBtn || !mobileMenuBtn.contains(event.target))) {
+                    toggleSidebar();
+                }
+            }
+        }
+    }
 
+    // Fonction pour fermer la sidebar automatiquement après un clic sur un lien (mobile)
+    function handleNavClick() {
+        if (window.innerWidth <= 1024) {
+            toggleSidebar();
+        }
+    }
+
+    // Fonction pour ajuster dynamiquement la hauteur de la sidebar
+    function adjustSidebarHeight() {
+        const sidebar = document.getElementById('sidebar');
+        const header = document.querySelector('.main-header');
+        
+        if (window.innerWidth <= 1024) {
+            // Sur mobile, la sidebar prend toute la hauteur
+            sidebar.style.height = '100vh';
+        } else {
+            // Sur desktop, on ajuste la hauteur
+            sidebar.style.height = '100vh';
+        }
+    }
+
+    // Ajouter un overlay pour mobile
+    function addMobileOverlay() {
+        // Vérifier si l'overlay existe déjà
+        let overlay = document.getElementById('mobileOverlay');
+        if (!overlay) {
+            overlay = document.createElement('div');
+            overlay.className = 'mobile-overlay';
+            overlay.id = 'mobileOverlay';
+            overlay.onclick = toggleSidebar;
+            document.body.appendChild(overlay);
+        }
+    }
+
+    // Initialisation
+    document.addEventListener('DOMContentLoaded', function() {
+        // Ajouter l'overlay pour mobile
+        addMobileOverlay();
+        
+        // Ajuster la hauteur initiale
+        adjustSidebarHeight();
+        
+        // Écouter les clics pour fermer la sidebar
+        document.addEventListener('click', closeSidebarOnClickOutside);
+        
+        // Écouter le redimensionnement de la fenêtre
+        window.addEventListener('resize', function() {
+            adjustSidebarHeight();
+            
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobileOverlay');
+            
+            // Fermer automatiquement la sidebar quand on passe en desktop
+            if (window.innerWidth > 1024) {
+                if (sidebar) {
+                    sidebar.classList.remove('open');
+                }
+                if (overlay) {
+                    overlay.classList.remove('active');
+                }
+                document.body.classList.remove('sidebar-open');
+                document.body.style.overflow = '';
+            }
+        });
+        
+        // Mettre à jour les liens de navigation
+        const navItems = document.querySelectorAll('.nav-item');
+        navItems.forEach(item => {
+            item.addEventListener('click', handleNavClick);
+        });
+    });
+
+    // Fonction pour changer de section
+    function switchSection(sectionId) {
+        // Cacher toutes les sections
+        document.querySelectorAll('.section').forEach(section => {
+            section.classList.remove('active');
+        });
+        
+        // Afficher la section sélectionnée
+        document.getElementById(sectionId).classList.add('active');
+        
+        // Mettre à jour le titre de la page
+        const pageTitle = document.getElementById('pageTitle');
+        const navItem = document.querySelector(`[onclick="switchSection('${sectionId}')"]`);
+        
+        if (navItem) {
+            const title = navItem.querySelector('span').textContent;
+            pageTitle.textContent = title;
+        }
+        
+        // Mettre à jour l'état actif de la navigation
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.classList.remove('active');
+        });
+        if (event && event.target) {
+            const navItemElement = event.target.closest('.nav-item');
+            if (navItemElement) {
+                navItemElement.classList.add('active');
+            }
+        }
+        
+        // Si on est sur mobile, fermer la sidebar
+        if (window.innerWidth <= 1024) {
+            toggleSidebar();
+        }
+    }
+
+    // Fonction pour basculer la sidebar
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('mobileOverlay');
+        const body = document.body;
+        
+        if (!sidebar) return;
+        
+        const isOpen = sidebar.classList.contains('open');
+        
+        if (isOpen) {
+            sidebar.classList.remove('open');
+            if (overlay) overlay.classList.remove('active');
+            body.classList.remove('sidebar-open');
+        } else {
+            sidebar.classList.add('open');
+            if (overlay) overlay.classList.add('active');
+            body.classList.add('sidebar-open');
+        }
+    }
         // ===== STATE MANAGEMENT =====
         const state = {
             clients: [],
@@ -2622,18 +3034,19 @@ function updateProductSelect() {
             }
 
             let html = `
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Nom</th>
-                            <th>Téléphone</th>
-                            <th>Email</th>
-                            <th>Type</th>
-                            <th>Ventes</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nom</th>
+                                <th>Téléphone</th>
+                                <th>Email</th>
+                                <th>Type</th>
+                                <th>Ventes</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
             `;
 
             clients.forEach(client => {
